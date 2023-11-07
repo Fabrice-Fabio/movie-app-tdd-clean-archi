@@ -1,14 +1,9 @@
 import 'package:mockito/mockito.dart';
 import 'package:movie_app/domain/entities/Movie.dart';
-import 'package:movie_app/domain/repositories/movie_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:movie_app/domain/usecases/get_trending_movies.dart';
-import 'package:mockito/annotations.dart';
 
-import 'get_trending_movies_test.mocks.dart';
-
-
-@GenerateNiceMocks([MockSpec<MovieRepository>()])
+import 'get_popular_movies_test.mocks.dart';
 
 void main(){
   late GetTrendingMovies usecase;
