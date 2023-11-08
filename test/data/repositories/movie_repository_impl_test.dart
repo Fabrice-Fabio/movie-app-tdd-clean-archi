@@ -1,6 +1,9 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:movie_app/core/errors/server_exception.dart';
+import 'package:movie_app/core/errors/server_failure.dart';
 import 'package:movie_app/data/datasources/movie_remote_data_source.dart';
 import 'package:movie_app/data/models/movie_model.dart';
 import 'package:movie_app/data/repositories/movie_repository_impl.dart';
@@ -41,7 +44,8 @@ void main(){
     final result = await repository.getTrendingMovies();
 
     verify(mockMovieRemoteDataSource.getTrendingMovies());
-    expect(result, equals(tMoviesList));
+
+    expect(result, isA<Right<Failure, List<Movie>>>());
   });
 
   test('should get popular movies from the remote data source', () async {
@@ -51,7 +55,7 @@ void main(){
     final result = await repository.getPopularMovies();
 
     verify(mockMovieRemoteDataSource.getPopularMovies());
-    expect(result, equals(tMoviesList));
+    expect(result, isA<Right<Failure, List<Movie>>>());
   });
 
   test('should search movies from the remote data source', () async {
@@ -61,7 +65,35 @@ void main(){
     final result = await repository.searchMovies(tQuery);
 
     verify(mockMovieRemoteDataSource.searchMovies(tQuery));
-    expect(result, equals(tMoviesList));
+    expect(result, isA<Right<Failure, List<Movie>>>());
+  });
+
+  test('should return ServerFailure when the call to remote data source is unsuccessful', () async {
+    when(mockMovieRemoteDataSource.getTrendingMovies())
+        .thenThrow(ServerException());
+
+    final result = await repository.getTrendingMovies();
+
+
+    expect(result, isA<Left<ServerFailure, List<Movie>>>());
+  });
+
+  test('should return ServerFailure when the call to remote data source is unsuccessful', () async {
+    when(mockMovieRemoteDataSource.getPopularMovies())
+        .thenThrow(ServerException());
+
+    final result = await repository.getPopularMovies();
+
+    expect(result, isA<Left<ServerFailure, List<Movie>>>());
+  });
+
+  test('should return ServerFailure when the call to remote data source is unsuccessful', () async {
+    when(mockMovieRemoteDataSource.searchMovies(tQuery))
+        .thenThrow(ServerException());
+
+    final result = await repository.searchMovies(tQuery);
+
+    expect(result, isA<Left<ServerFailure, List<Movie>>>());
   });
 
 }
